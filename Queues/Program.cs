@@ -1,5 +1,6 @@
 ﻿using Azure.Storage.Queues;
 using Microsoft.Extensions.Configuration;
+using Queueus.Services;
 
 var config = new ConfigurationBuilder()
     .SetBasePath(AppContext.BaseDirectory)
@@ -9,15 +10,13 @@ var config = new ConfigurationBuilder()
 var storageConnectionString = config["AzureStorageAccount"];
 
 var queueClient = new QueueClient(storageConnectionString, "orders");
+queueClient.CreateIfNotExists();
 
-// queueClient.CreateIfNotExists();
+// Publish
+// var publisher = new Publisher(queueClient);
+// var messages = Publisher.GenerateMessages(10);
+// await publisher.PublishAsync(messages);
 
-// Send messages to queue
-if(queueClient.Exists())
-{
-    for (int i = 1; i <= 10; i++)
-    {
-        queueClient.SendMessage($"Order {i}");
-        Console.WriteLine($"Sent: Order {i}");
-    }
-}
+// Consume
+var consumer = new Consumer(queueClient);
+await consumer.ConsumeAsync();
