@@ -1,7 +1,7 @@
 using System.Text;
 using System.Text.Json;
 using Azure.Storage.Queues;
-using Queueus.Models;
+using Shared.Models;
 
 namespace Queueus.Services;
 

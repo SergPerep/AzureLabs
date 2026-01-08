@@ -1,4 +1,4 @@
-namespace Queueus.Models;
+namespace Shared.Models;
 
 public class Book
 {

@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using Azure.Storage.Queues;
 using Microsoft.Extensions.Configuration;
-using Queueus.Models;
+using Shared.Models;
 using Queueus.Services;
 
 var config = new ConfigurationBuilder()
