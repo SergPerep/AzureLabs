@@ -8,7 +8,6 @@ public class SenderService : IAsyncDisposable
     public SenderService(ServiceBusClient sbClient, string queueName)
     {
         _sender = sbClient.CreateSender(queueName);
-
     }
     
     public async Task SendMessagesInBatch(IEnumerable<string> messages)

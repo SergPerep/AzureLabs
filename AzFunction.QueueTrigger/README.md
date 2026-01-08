@@ -1,0 +1,3 @@
+- [] Read messages 
+- [] Deserialize it
+- [] Move it to Storage Table with output binding

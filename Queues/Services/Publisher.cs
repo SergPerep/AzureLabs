@@ -1,3 +1,4 @@
+using System.Text;
 using Azure.Storage.Queues;
 
 namespace Queueus.Services;
@@ -13,14 +14,16 @@ public class Publisher(QueueClient queueClient)
         }
         return messages;
     }
-    public async Task PublishAsync(List<string> messages)
+    public async Task PublishAsync(IEnumerable<string> messages)
     {
         // Send messages to queue
         if (queueClient.Exists())
         {
             foreach (var message in messages)
             {
-                await queueClient.SendMessageAsync(message);
+                var bytes = Encoding.UTF8.GetBytes(message);
+                var base64Message = Convert.ToBase64String(bytes);
+                await queueClient.SendMessageAsync(base64Message);
                 Console.WriteLine($"Sent: {message}");
             }
         }
