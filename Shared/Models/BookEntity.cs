@@ -1,4 +1,4 @@
-namespace AzuerTables.Start.Models;
+namespace Shared.Models;
 
 using Azure;
 using Azure.Data.Tables;

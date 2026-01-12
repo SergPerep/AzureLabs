@@ -1,5 +1,4 @@
-﻿using AzuerTables.Start.Models;
-using Azure.Data.Tables;
+﻿using Azure.Data.Tables;
 using Azure.Identity;
 using Microsoft.Extensions.Configuration;
 using Shared.Models;
