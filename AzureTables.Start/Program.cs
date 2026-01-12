@@ -30,7 +30,7 @@ var tableEntities = books.Select(book =>
     return new BookEntity
     {
         PartitionKey = genre,
-        RowKey = new Guid().ToString(),
+        RowKey = Guid.NewGuid().ToString(),
         Name = book.Name,
         Author = book.Author,
         Genre = book.Genre,
