@@ -25,7 +25,7 @@ string queueName = config["QueueName"];
 // await using var senderService = new SenderService(senderConnectionString, queueName);
 // await senderService.SendBooks(books);
 
-var receiverService = new RecieverService(listenerConnectionString, queueName);
+await using var receiverService = new RecieverService(listenerConnectionString, queueName);
 var receivedBooks = await receiverService.RecieveAsync();
 foreach (var book in receivedBooks)
 {
