@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Azure.Messaging.ServiceBus;
+using Shared.Models;
 
 public class SenderService : IAsyncDisposable
 {
@@ -9,12 +10,13 @@ public class SenderService : IAsyncDisposable
         _sender = sbClient.CreateSender(topicName);
     }
 
-    public async Task SendMessagesAsync<T>(IEnumerable<T> messages)
+    public async Task SendMessagesAsync(IEnumerable<Book> books)
     {
-        foreach (var textMessage in messages)
+        foreach (var book in books)
         {
-            var msg = JsonSerializer.Serialize(textMessage);
+            var msg = JsonSerializer.Serialize(book);
             var serviceBusMessage = new ServiceBusMessage(msg);
+            serviceBusMessage.ApplicationProperties["Genre"] = book.Genre;
             await _sender.SendMessageAsync(serviceBusMessage);
             Console.WriteLine($"Sent message: {msg}");
         }
