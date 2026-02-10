@@ -11,8 +11,8 @@ var config = new ConfigurationBuilder()
     .Build();
 
 
-// await BuildAndSendEvents();
-await ReadFromPartition();
+await BuildAndSendEvents();
+// await ReadFromPartition();
 
 async Task BuildAndSendEvents()
 {
