@@ -46,7 +46,7 @@ public class ProcessorService : IAsyncDisposable
         }
         catch (TaskCanceledException)
         {
-            // This is expected when the delay is canceled.
+            Console.WriteLine("Processing stopped.");
         }
     }
 
@@ -54,8 +54,7 @@ public class ProcessorService : IAsyncDisposable
     {
         try
         {
-            var eventData = eventArgs.Data.EventBody.ToString();
-            var book = JsonSerializer.Deserialize<Book>(eventData);
+            var book = eventArgs.Data.EventBody.ToObjectFromJson<Book>();
             Console.WriteLine($"Received: {book.Name}, Genre: {book.Genre} from partition: {eventArgs.Partition.PartitionId}");
             await eventArgs.UpdateCheckpointAsync(); // On Blob storage
         }
@@ -80,15 +79,14 @@ public class ProcessorService : IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
-        cancellationSource?.Cancel();
         try
         {
             if (processor != null)
-        {
-            await processor.StopProcessingAsync();
-            processor.ProcessEventAsync -= processEventHandler;
-            processor.ProcessErrorAsync -= processErrorHandler;
-        }
+            {
+                await processor.StopProcessingAsync();
+                processor.ProcessEventAsync -= processEventHandler;
+                processor.ProcessErrorAsync -= processErrorHandler;
+            }
         }
         finally
         {

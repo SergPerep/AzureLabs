@@ -11,14 +11,15 @@ var config = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json", optional: false) // Reads json
     .Build();
 
+var senderConnectionString = config["eventHubInstanceConnStringSenderPolicy"];
+var receiverConnevtionString = config["eventHubInstanceConnStringReceiverPolicy"];
 
-
-// await SendEventsAsync();
+//await SendEventsAsync();
 await ReceiveEventsAsync();
 
 async Task SendEventsAsync()
 {
-    var eventHubProducerClient = new EventHubProducerClient(config["eventHubInstanceConnStringSenderPolicy"]);
+    var eventHubProducerClient = new EventHubProducerClient(senderConnectionString);
 
     var books = new List<Book>
     {
@@ -31,9 +32,8 @@ async Task SendEventsAsync()
     using var eventBatch = await eventHubProducerClient.CreateBatchAsync();
     foreach (var book in books)
     {
-        var jsonString = JsonSerializer.Serialize(book);
-        var bytes = Encoding.UTF8.GetBytes(jsonString);
-        eventBatch.TryAdd(new EventData(bytes));
+        var eventData = BinaryData.FromObjectAsJson(book);
+        eventBatch.TryAdd(new EventData(eventData));
     }
     await eventHubProducerClient.SendAsync(eventBatch);
     Console.WriteLine("Data sent");
@@ -41,17 +41,19 @@ async Task SendEventsAsync()
 
 async Task ReceiveEventsAsync()
 {
-    var cancellationTokenSource = new CancellationTokenSource();
-    cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(5));
-    var eventHubReceiverClient = new EventHubConsumerClient("$Default", config["eventHubInstanceConnStringReceiverPolicy"]);
-    var events = eventHubReceiverClient.ReadEventsAsync(cancellationTokenSource.Token);
-    await foreach (var evt in events)
+    var eventHubReceiverClient = new EventHubConsumerClient("$Default", receiverConnevtionString);
+    using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+    try
     {
-        Console.WriteLine($"Received event: {evt.Data.EventBody}");
+        var events = eventHubReceiverClient.ReadEventsAsync(cancellationTokenSource.Token);
+        await foreach (var evt in events)
+        {
+            var book = evt.Data.EventBody.ToObjectFromJson<Book>();
+            Console.WriteLine($"Received event. Book Title: {book.Name}");
+        }
     }
-}
-
-async Task ReceiveEventsWithProcessor()
-{
-    
+    catch (TaskCanceledException)
+    {
+        Console.WriteLine("Finish receiving events");
+    }
 }

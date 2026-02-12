@@ -42,8 +42,7 @@ var senderPolicyString = config["SenderPloictyString"];
 
     foreach (var book in books)
     {
-        var jsonString = JsonSerializer.Serialize(book);
-        var eventData = new EventData(jsonString);
+        var eventData = new EventData(BinaryData.FromObjectAsJson(book));
         await producer.SendAsync(new[] { eventData }, new SendEventOptions { PartitionKey = book.Genre });
         Console.WriteLine($"Sent: {book.Name}");
     }
@@ -59,8 +58,7 @@ async Task ReadFromPartition()
 
     await foreach (var partitionEvent in consumer.ReadEventsFromPartitionAsync(partitionId.ToString(), EventPosition.Earliest, cancellationToken: cancellationSource.Token))
     {
-        var jsonString = partitionEvent.Data.EventBody.ToString();
-        var book = JsonSerializer.Deserialize<Book>(jsonString);
+        var book = partitionEvent.Data.EventBody.ToObjectFromJson<Book>();
         Console.WriteLine($"Received from Partition {partitionId}: {book.Name}, Genre: {book.Genre}");
     }
 }
