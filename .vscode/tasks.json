@@ -71,7 +71,7 @@
 			"type": "func",
 			"dependsOn": "build (functions)",
 			"options": {
-				"cwd": "${workspaceFolder}/AzFunction.QueueTrigger/bin/Debug/net8.0"
+				"cwd": "${workspaceFolder}/EventGrid.Webhook/bin/Debug/net8.0"
 			},
 			"command": "host start",
 			"isBackground": true,
