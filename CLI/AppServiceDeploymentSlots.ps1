@@ -13,13 +13,18 @@ New-AzResourceGroup -Name $ResourceGroupName -Location $Location
 New-AzAppServicePlan -Name $AppServicePlanName `
     -ResourceGroupName $ResourceGroupName `
     -Location $Location `
-    -Tier "Free"
+    -Tier Standard
 
 # Create Web App
 New-AzWebApp -Name $AppName `
     -ResourceGroupName $ResourceGroupName `
     -Location $Location `
     -AppServicePlan $AppServicePlanName
+
+# Create deployment slot
+New-AzWebAppSlot -Name $AppName `
+    -ResourceGroupName $ResourceGroupName `
+    -Slot "staging"
 
 # Deploy web app from github
 $RepoUrl = "https://github.com/SergPerep/foods"
@@ -30,7 +35,7 @@ $PropertiesObject = @{
 }
 Set-AzResource -Properties $PropertiesObject `
     -ResourceGroupName $ResourceGroupName `
-    -ResourceType Microsoft.Web/sites/sourcecontrols `
-    -ResourceName $AppName/web `
+    -ResourceType Microsoft.Web/sites/slots/sourcecontrols `
+    -ResourceName $AppName/staging/web `
     -ApiVersion 2022-03-01 `
     -Force
